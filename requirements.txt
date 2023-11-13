@@ -1,0 +1,12 @@
+ConfigArgParse==1.5.2
+imageio==2.6.1
+numpy
+scikit_image==0.16.2
+scipy
+# skimage==0.0
+tensorflow==2.5.0
+torch==1.8.1
+torchvision==0.9.1
+tqdm==4.42.1
+scikit-learn
+more_itertools

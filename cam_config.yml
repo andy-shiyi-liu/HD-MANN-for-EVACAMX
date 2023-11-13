@@ -1,0 +1,27 @@
+arch:
+  ArraysPerMat: 4
+  MatsPerBank: 4
+  Merge: exact
+  SubarraysPerArray: 2
+array:
+  bit: 3
+  cell: RRAM
+  col: 256
+  row: 32
+  sensing: best
+cell:
+  design: 6T2M
+  device: RRAM
+  maxConductance: 150
+  minConductance: 0
+  representation: voltage
+  type: MCAM
+  writeNoise:
+    hasWriteNoise: false
+query:
+  FuncSim: 1
+  PerfEval: true
+  bit: 3
+  distance: euclidean
+  parameter: 1
+  searchScheme: knn
