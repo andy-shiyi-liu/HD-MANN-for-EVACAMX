@@ -14,7 +14,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 scriptFolder = Path(__file__).parent
-templateConfigPath = scriptFolder.joinpath("acc_vs_variation.yml")
+templateConfigPath = scriptFolder.joinpath("acc_vs_sensingLimit.yml")
 destConfigPath = scriptFolder.parent.joinpath("./cam_config.yml")
 simOutputPath = scriptFolder.joinpath("sim_run.log")
 pyScriptPath = scriptFolder.parent.joinpath("./main.py")
@@ -23,7 +23,7 @@ if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotOutputPath = scriptFolder.joinpath("./plot.html")
 
-variationList = list(np.arange(0, 1.6, 0.1))
+senLimitList = list(np.arange(0, 5.1, 0.3))
 
 
 jobList = {
@@ -97,12 +97,12 @@ def plot(jobList: dict):
         accuracyResult = jobList[jobName]["accuResult"]
         edpResult = jobList[jobName]["edpResult"]
         accuracies = []
-        for var in variationList:
+        for var in senLimitList:
             accuracies.append(accuracyResult.at[0, var])
 
         traces.append(
             go.Scatter(
-                x=variationList,
+                x=senLimitList,
                 y=accuracies,
                 mode="lines",
                 name=jobName,
@@ -129,7 +129,7 @@ def run_exp(
     dim: int,
     col: int,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    for var in variationList:
+    for var in senLimitList:
         print("*" * 30)
         print(f"var = {var}")
         # change
@@ -164,12 +164,12 @@ def main():
         print(f"               job: {jobName}")
         print("**************************************************")
         jobList[jobName]["accuResult"] = pd.DataFrame(
-            np.zeros((1, len(variationList)), dtype=float),
-            columns=variationList,
+            np.zeros((1, len(senLimitList)), dtype=float),
+            columns=senLimitList,
         )
         jobList[jobName]["edpResult"] = pd.DataFrame(
-            np.zeros((1, len(variationList)), dtype=float),
-            columns=variationList,
+            np.zeros((1, len(senLimitList)), dtype=float),
+            columns=senLimitList,
         )
 
         jobList[jobName]["accuResult"], jobList[jobName]["edpResult"] = run_exp(
