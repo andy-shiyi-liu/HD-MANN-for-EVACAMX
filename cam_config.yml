@@ -6,7 +6,7 @@ arch:
 array:
   bit: 3
   cell: Numerical
-  col: 128
+  col: 32
   row: 32
   sensing: best
   sensingLimit: 0
@@ -26,7 +26,7 @@ cell:
     noiseType:
     - variation
     variation:
-      stdDev: 0.9
+      stdDev: 4.8
       type: gaussian
 query:
   FuncSim: 1

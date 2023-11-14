@@ -33,15 +33,19 @@ from EvaCAMX.EvaCAMX import EvaCAMX
 
 train_model = False
 dim = 256
+n_step = 10
 
 parser = argparse.ArgumentParser()
 
 # Add arguments
-parser.add_argument('--dim', type=int, help='Embedding Dimension')
+parser.add_argument("--dim", type=int, help="Embedding Dimension")
+parser.add_argument("--n_step", type=int, help="Running Times for Inference")
 
 args = parser.parse_args()
 if args.dim:
     dim = args.dim
+if args.n_step:
+    n_step = args.n_step
 
 
 def load_config():
@@ -188,11 +192,10 @@ def train(
 
 
 def inference_software(
-    model:CNNController,
+    model: CNNController,
     data_generator: DataGenerator,
     device,
     key_mem_transform=binarize,
-    n_step=10,
     sum_argmax=True,
     type="val",
 ):
@@ -264,11 +267,10 @@ def inference_software(
 
 
 def inference_CAM(
-    model:CNNController,
+    model: CNNController,
     data_generator: DataGenerator,
     device,
     key_mem_transform=binarize,
-    n_step=10,
     sum_argmax=True,
     type="val",
 ):
@@ -315,7 +317,6 @@ def inference_CAM(
                 query_set,
             ) = data_generator.sample_batch(type, 32)
 
-            
             # exit(0)
             support_label, support_set = prep_data(support_label, support_set, device)
             query_label, query_set = prep_data(query_label, query_set, device)
@@ -325,16 +326,24 @@ def inference_CAM(
                 query_keys = model(query_set)
 
                 pred_row = simCAM(support_keys.cpu().numpy(), query_keys.cpu().numpy())
+
+                popIndices = list(np.where(pred_row >= W * S)[0])
+                pred_row = np.array(pred_row)
+                pred_row = np.delete(pred_row, popIndices)
+                pred_row = pred_row.flatten()
+
                 support_label_argmax = np.argmax(support_label.cpu(), axis=1)
-                pred_argmax = support_label_argmax[pred_row].numpy().flatten()
+                pred_argmax = support_label_argmax.numpy().flatten()[pred_row]
                 query_label_argmax = np.argmax(query_label.cpu().numpy(), axis=1)
 
-                # print(pred_argmax)
-                # print(query_label_argmax)
+                query_label_argmax = np.array(query_label_argmax)
+                query_label_argmax = np.delete(query_label_argmax, popIndices)
+                query_label_argmax = query_label_argmax.flatten()
 
-                accumulated_acc += np.sum(pred_argmax == query_label_argmax) / len(
-                    pred_argmax
-                )
+                if len(pred_argmax) != 0:
+                    accumulated_acc += np.sum(pred_argmax == query_label_argmax) / len(
+                        pred_argmax
+                    )
         return accumulated_acc / n_step
 
 
@@ -382,7 +391,6 @@ if __name__ == "__main__":
     softab_num_num = int((job_id_number / divider) % softab_num.size)
     divider = divider * softab_num.size
 
-
     W = num_ways[num_ways_num]  # way
     S = num_shots[num_ways_num]  # shots
     D = dim
@@ -394,8 +402,12 @@ if __name__ == "__main__":
     # criterion = nn.CrossEntropyLoss()
     criterion = nn.BCELoss()
     optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-4)
-    if scriptFolder.joinpath(f'./results/{D}dim/{exp_name}_best.pth.tar').exists():
-        model.load_state_dict(torch.load(scriptFolder.joinpath(f'./results/{D}dim/{exp_name}_best.pth.tar')))
+    if scriptFolder.joinpath(f"./results/{D}dim/{exp_name}_best.pth.tar").exists():
+        model.load_state_dict(
+            torch.load(
+                scriptFolder.joinpath(f"./results/{D}dim/{exp_name}_best.pth.tar")
+            )
+        )
 
     if train_model:
         model, steps, loss, acc = train(
