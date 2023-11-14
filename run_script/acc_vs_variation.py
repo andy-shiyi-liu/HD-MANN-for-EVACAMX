@@ -206,7 +206,7 @@ def matplotlib_plot(jobList: dict):
     plt.legend()
 
     # Show the plot
-    plt.savefig(matplotlibOutputPath)
+    plt.savefig(matplotlibOutputPath, dpi=300)
 
 def plot_jobs():
     for jobName in jobList:
