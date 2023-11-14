@@ -2,22 +2,32 @@ arch:
   ArraysPerMat: 4
   MatsPerBank: 4
   Merge: exact
-  SubarraysPerArray: 2
+  SubarraysPerArray: 1
 array:
   bit: 3
-  cell: RRAM
-  col: 256
+  cell: Numerical
+  col: 128
   row: 32
   sensing: best
+  sensingLimit: 0
 cell:
   design: 6T2M
-  device: RRAM
+  device: Numerical
   maxConductance: 150
   minConductance: 0
   representation: voltage
   type: MCAM
   writeNoise:
-    hasWriteNoise: false
+    cellDesign: 6T2M
+    device: Numerical
+    hasWriteNoise: true
+    maxConductance: 150
+    minConductance: 0
+    noiseType:
+    - variation
+    variation:
+      stdDev: 0.9
+      type: gaussian
 query:
   FuncSim: 1
   PerfEval: true

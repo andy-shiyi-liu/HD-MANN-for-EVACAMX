@@ -14,7 +14,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 scriptFolder = Path(__file__).parent
-templateConfigPath = scriptFolder.joinpath("acc_EDP_vs_dim_arrayCol.yml")
+templateConfigPath = scriptFolder.joinpath("acc_vs_variation.yml")
 destConfigPath = scriptFolder.parent.joinpath("./cam_config.yml")
 simOutputPath = scriptFolder.joinpath("sim_run.log")
 pyScriptPath = scriptFolder.parent.joinpath("./main.py")
@@ -23,40 +23,39 @@ if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotOutputPath = scriptFolder.joinpath("./plot.html")
 
-dimList = [32, 64, 128, 256, 512]
-arrayColList = [32, 64, 128, 256]
+variationList = list(np.arange(0, 1.1, 0.1))
 
-# dimList = [32, 64]
-# arrayColList = [32, 64]
 
 jobList = {
-    "2bit_ideal": {
-        "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
-        "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
-        "hasVar": False,
-        "bit": 2,
-        "varStdDev": 0.75,
+    "dim128col128": {
+        "accuResultPath": resultDir.joinpath("dim128Col128Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col128edp.csv"),
+        "dim": 128,
+        "col": 128,
     },
-    "2bit_var": {
-        "accuResultPath": resultDir.joinpath("2bitVarAccu.csv"),
-        "edpResultPath": resultDir.joinpath("2bitVaredp.csv"),
-        "hasVar": True,
-        "bit": 2,
-        "varStdDev": 0.75,
+    "dim128Col64": {
+        "accuResultPath": resultDir.joinpath("dim128Col64Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col64edp.csv"),
+        "dim": 128,
+        "col": 64,
     },
-    "3bit_ideal": {
-        "accuResultPath": resultDir.joinpath("3bitIdealAccu.csv"),
-        "edpResultPath": resultDir.joinpath("3bitIdealedp.csv"),
-        "hasVar": False,
-        "bit": 3,
-        "varStdDev": 1.5,
+    "dim128Col32": {
+        "accuResultPath": resultDir.joinpath("dim128Col32Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col32edp.csv"),
+        "dim": 128,
+        "col": 32,
     },
-    "3bit_var": {
-        "accuResultPath": resultDir.joinpath("3bitVarAccu.csv"),
-        "edpResultPath": resultDir.joinpath("3bitVaredp.csv"),
-        "hasVar": True,
-        "bit": 3,
-        "varStdDev": 1.5,
+    "dim64col64": {
+        "accuResultPath": resultDir.joinpath("dim64Col64Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim64Col64edp.csv"),
+        "dim": 64,
+        "col": 64,
+    },
+    "dim32Col32": {
+        "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
+        "dim": 32,
+        "col": 32,
     },
 }
 
@@ -98,24 +97,15 @@ def plot(jobList: dict):
         accuracyResult = jobList[jobName]["accuResult"]
         edpResult = jobList[jobName]["edpResult"]
         accuracies = []
-        EDPs = []
-        labels = []
-        for dim in dimList:
-            for arrayCol in arrayColList:
-                if dim < arrayCol:
-                    continue
-                accuracies.append(accuracyResult.at[dim, arrayCol])
-                EDPs.append(edpResult.at[dim, arrayCol])
-                labels.append(f"dim={dim},col={arrayCol}")
+        for var in variationList:
+            accuracies.append(accuracyResult.at[0, var])
 
         traces.append(
             go.Scatter(
-                x=EDPs,
+                x=variationList,
                 y=accuracies,
-                mode="markers",
+                mode="lines",
                 name=jobName,
-                text=labels,
-                textposition="middle center",
             )
         )
 
@@ -124,53 +114,47 @@ def plot(jobList: dict):
 
     # Set layout options
     fig.update_layout(
-        title="ACC-EDP vs dim/arrayCol",
-        xaxis=dict(title="EDP"),
-        yaxis=dict(title="Accu"),
+        title="Accuracy vs Standard Deviation of Variation",
+        xaxis=dict(title="Standard Deviation of Variation"),
+        yaxis=dict(title="Accuracy"),
     )
 
     fig.write_html(plotOutputPath)
     print("save plot")
-
+    fig.show()
 
 def run_exp(
     accuResult: pd.DataFrame,
     edpResult: pd.DataFrame,
-    bit: int,
-    hasVar: bool,
-    varStdDev: float,
+    dim: int,
+    col: int,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    for dim in dimList:
-        for arrayCol in arrayColList:
-            if dim < arrayCol:
-                continue
-            print("*" * 30)
-            print(f"dim = {dim}, arrayCol = {arrayCol}, hasVar = {hasVar}")
-            # change
-            with open(templateConfigPath, mode="r") as fin:
-                config = yaml.load(fin, Loader=yaml.FullLoader)
+    for var in variationList:
+        print("*" * 30)
+        print(f"var = {var}")
+        # change
+        with open(templateConfigPath, mode="r") as fin:
+            config = yaml.load(fin, Loader=yaml.FullLoader)
 
-            config["array"]["col"] = arrayCol
-            assert dim % arrayCol == 0, "dim must be a multiplier of arrayCol!"
-            config["arch"]["SubarraysPerArray"] = dim // arrayCol
-            config["cell"]["writeNoise"]["hasWriteNoise"] = hasVar
-            config["cell"]["writeNoise"]["variation"]["stdDev"] = varStdDev
-            config["array"]["bit"] = bit
-            config["query"]["bit"] = bit
+        config["array"]["col"] = col
+        assert dim % col == 0, "dim must be a multiplier of col!"
+        config["arch"]["SubarraysPerArray"] = dim // col
+        config["cell"]["writeNoise"]["hasWriteNoise"] = True
+        config["cell"]["writeNoise"]["variation"]["stdDev"] = float(var)
 
-            with open(destConfigPath, "w") as yaml_file:
-                yaml.dump(config, yaml_file, default_flow_style=False)
+        with open(destConfigPath, "w") as yaml_file:
+            yaml.dump(config, yaml_file, default_flow_style=False)
 
-            assert pyScriptPath.exists(), "The script to be run does not exist!"
-            assert (
-                os.system(f"python {pyScriptPath} --dim {dim} | tee {simOutputPath}")
-                == 0
-            ), "run script failed."
+        assert pyScriptPath.exists(), "The script to be run does not exist!"
+        assert (
+            os.system(f"python {pyScriptPath} --dim {dim} | tee {simOutputPath}")
+            == 0
+        ), "run script failed."
 
-            accu, edp = getAccuEDP(simOutputPath)
+        accu, edp = getAccuEDP(simOutputPath)
 
-            accuResult.at[dim, arrayCol] = accu
-            edpResult.at[dim, arrayCol] = edp
+        accuResult.at[0, var] = accu
+        edpResult.at[0,var] = edp
     return accuResult, edpResult
 
 
@@ -180,22 +164,19 @@ def main():
         print(f"               job: {jobName}")
         print("**************************************************")
         jobList[jobName]["accuResult"] = pd.DataFrame(
-            np.zeros((len(dimList), len(arrayColList)), dtype=float),
-            columns=arrayColList,
-            index=dimList,
+            np.zeros((1, len(variationList)), dtype=float),
+            columns=variationList,
         )
         jobList[jobName]["edpResult"] = pd.DataFrame(
-            np.zeros((len(dimList), len(arrayColList)), dtype=float),
-            columns=arrayColList,
-            index=dimList,
+            np.zeros((1, len(variationList)), dtype=float),
+            columns=variationList,
         )
 
         jobList[jobName]["accuResult"], jobList[jobName]["edpResult"] = run_exp(
             jobList[jobName]["accuResult"],
             jobList[jobName]["edpResult"],
-            jobList[jobName]["bit"],
-            jobList[jobName]["hasVar"],
-            jobList[jobName]["varStdDev"],
+            jobList[jobName]["dim"],
+            jobList[jobName]["col"],
         )
 
         jobList[jobName]["accuResult"].to_csv(jobList[jobName]["accuResultPath"])
@@ -224,5 +205,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()

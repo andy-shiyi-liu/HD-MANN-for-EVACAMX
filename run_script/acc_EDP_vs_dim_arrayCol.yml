@@ -1,0 +1,42 @@
+arch:
+  ArraysPerMat: 4
+  MatsPerBank: 4
+  Merge: exact
+  SubarraysPerArray: 4
+array:
+  cell: &cellType Numerical     # RRAM, FeFET
+  col: 512
+  row: 32
+  sensing: best
+  bit: &bit 3
+  sensinglimit: 10
+cell:
+  design: &cellDesign 6T2M
+  representation: voltage
+  type: MCAM     # TCAM, MCAM, ACAM
+  device: *cellType
+  minConductance: &cellMinConduct 0
+  maxConductance: &cellMaxConduct 150
+  writeNoise:
+    hasWriteNoise: true
+    device: *cellType
+    cellDesign: *cellDesign
+    minConductance: *cellMinConduct
+    maxConductance: *cellMaxConduct
+    noiseType:
+      # sequence matters!
+      # - quantization
+      - variation
+    # for each noise type above, create an item below.
+    # quantization:
+    #   nBits: 40
+    variation:
+      type: gaussian    # gaussian, g-dependent
+      stdDev: 0
+query:
+  FuncSim: 1
+  PerfEval: true
+  bit: *bit
+  distance: euclidean     # range, euclidean
+  parameter: 1
+  searchScheme: knn      # exact, knn, threshold

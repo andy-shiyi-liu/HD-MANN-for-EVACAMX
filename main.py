@@ -32,7 +32,7 @@ from EvaCAMX.EvaCAMX import EvaCAMX
 
 
 train_model = False
-dim = 512
+dim = 256
 
 parser = argparse.ArgumentParser()
 

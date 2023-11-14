@@ -4,11 +4,12 @@ arch:
   Merge: exact
   SubarraysPerArray: 4
 array:
-  cell: &cellType RRAM    # RRAM, FeFET
+  cell: &cellType Numerical     # RRAM, FeFET
   col: 512
   row: 32
   sensing: best
   bit: &bit 3
+  sensingLimit: 0
 cell:
   design: &cellDesign 6T2M
   representation: voltage
@@ -17,20 +18,21 @@ cell:
   minConductance: &cellMinConduct 0
   maxConductance: &cellMaxConduct 150
   writeNoise:
-    hasWriteNoise: false
-    # cellDesign: *cellDesign
-    # minConductance: *cellMinConduct
-    # maxConductance: *cellMaxConduct
-    # noiseType:
-    #   # sequence matters!
-    #   - quantization
-    #   - variation
-    # # for each noise type above, create an item below.
+    hasWriteNoise: true
+    device: *cellType
+    cellDesign: *cellDesign
+    minConductance: *cellMinConduct
+    maxConductance: *cellMaxConduct
+    noiseType:
+      # sequence matters!
+      # - quantization
+      - variation
+    # for each noise type above, create an item below.
     # quantization:
     #   nBits: 40
-    # variation:
-    #   type: gaussian    # gaussian, g-dependent
-    #   stdDev: 0        # mS, the standard deviation of the gaussian distribution
+    variation:
+      type: gaussian    # gaussian, g-dependent
+      stdDev: 0
 query:
   FuncSim: 1
   PerfEval: true
