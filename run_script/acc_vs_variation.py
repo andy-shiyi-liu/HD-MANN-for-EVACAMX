@@ -21,7 +21,8 @@ pyScriptPath = scriptFolder.parent.joinpath("./main.py")
 resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
-plotOutputPath = scriptFolder.joinpath("./plot.html")
+plotlyOutputPath = scriptFolder.joinpath("./plot.html")
+matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
 
 variationList = list(np.arange(0, 1.1, 0.1))
 
@@ -91,7 +92,7 @@ def getAccuEDP(logPath: Path) -> Tuple[float, float]:
     return accuracy, edp
 
 
-def plot(jobList: dict):
+def plotly_plot(jobList: dict):
     traces = []
     for jobName in jobList.keys():
         accuracyResult = jobList[jobName]["accuResult"]
@@ -119,7 +120,7 @@ def plot(jobList: dict):
         yaxis=dict(title="Accuracy"),
     )
 
-    fig.write_html(plotOutputPath)
+    fig.write_html(plotlyOutputPath)
     print("save plot")
     fig.show()
 
@@ -183,8 +184,29 @@ def main():
         jobList[jobName]["edpResult"].to_csv(jobList[jobName]["edpResultPath"])
         print("saved stat")
 
-    plot(jobList)
+    plotly_plot(jobList)
 
+
+def matplotlib_plot(jobList: dict):
+    import matplotlib.pyplot as plt
+    traces = []
+    for jobName in jobList.keys():
+        accuracyResult = jobList[jobName]["accuResult"]
+        edpResult = jobList[jobName]["edpResult"]
+        accuracies = []
+        for var in variationList:
+            accuracies.append(accuracyResult.at[0, var])
+
+        plt.plot(variationList, accuracies, marker='o', linestyle='-', label=jobName)
+
+    # Adding labels and title
+    plt.xlabel('Standard Deviation of Variation')
+    plt.ylabel('Accuracy')
+
+    plt.legend()
+
+    # Show the plot
+    plt.savefig(matplotlibOutputPath)
 
 def plot_jobs():
     for jobName in jobList:
@@ -192,18 +214,19 @@ def plot_jobs():
             jobList[jobName]["accuResultPath"], index_col=0
         )
         jobList[jobName]["accuResult"].columns = [
-            int(i) for i in jobList[jobName]["accuResult"].columns
+            float(i) for i in jobList[jobName]["accuResult"].columns
         ]
         jobList[jobName]["edpResult"] = pd.read_csv(
             jobList[jobName]["edpResultPath"], index_col=0
         )
         jobList[jobName]["edpResult"].columns = [
-            int(i) for i in jobList[jobName]["edpResult"].columns
+            float(i) for i in jobList[jobName]["edpResult"].columns
         ]
 
-    plot(jobList)
+    # plotly_plot(jobList)
+    matplotlib_plot(jobList)
 
 
 if __name__ == "__main__":
-    main()
-    # plot_jobs()
+    # main()
+    plot_jobs()
