@@ -4,7 +4,7 @@ arch:
   Merge: exact
   SubarraysPerArray: 1
 array:
-  bit: 3
+  bit: 2
   cell: Numerical
   col: 32
   row: 32
@@ -20,18 +20,18 @@ cell:
   writeNoise:
     cellDesign: 6T2M
     device: Numerical
-    hasWriteNoise: true
+    hasWriteNoise: false
     maxConductance: 150
     minConductance: 0
     noiseType:
     - variation
     variation:
-      stdDev: 4.8
+      stdDev: 0
       type: gaussian
 query:
   FuncSim: 1
   PerfEval: true
-  bit: 3
+  bit: 2
   distance: euclidean
   parameter: 1
   searchScheme: knn

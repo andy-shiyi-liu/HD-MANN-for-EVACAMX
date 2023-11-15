@@ -9,7 +9,7 @@ array:
   row: 32
   sensing: best
   bit: &bit 3
-  sensinglimit: 10
+  sensingLimit: 0
 cell:
   design: &cellDesign 6T2M
   representation: voltage

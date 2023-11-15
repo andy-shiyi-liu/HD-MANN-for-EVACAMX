@@ -12,6 +12,8 @@ from typing import Tuple
 import re
 import plotly.express as px
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 scriptFolder = Path(__file__).parent
 templateConfigPath = scriptFolder.joinpath("acc_EDP_vs_dim_arrayCol.yml")
@@ -21,7 +23,8 @@ pyScriptPath = scriptFolder.parent.joinpath("./main.py")
 resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
-plotOutputPath = scriptFolder.joinpath("./plot.html")
+plotlyOutputPath = scriptFolder.joinpath("./plot.html")
+matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
 
 dimList = [32, 64, 128, 256, 512]
 arrayColList = [32, 64, 128, 256]
@@ -29,35 +32,38 @@ arrayColList = [32, 64, 128, 256]
 # dimList = [32, 64]
 # arrayColList = [32, 64]
 
+# n_step = 10
+n_step = 100
+
 jobList = {
-    "2bit_ideal": {
-        "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
-        "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
-        "hasVar": False,
-        "bit": 2,
-        "varStdDev": 0.75,
-    },
-    "2bit_var": {
-        "accuResultPath": resultDir.joinpath("2bitVarAccu.csv"),
-        "edpResultPath": resultDir.joinpath("2bitVaredp.csv"),
-        "hasVar": True,
-        "bit": 2,
-        "varStdDev": 0.75,
-    },
-    "3bit_ideal": {
+    # "2bit": {
+    #     "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
+    #     "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
+    #     "hasVar": False,
+    #     "bit": 2,
+    #     "varStdDev": 0,
+    # },
+    # "2bit_var": {
+    #     "accuResultPath": resultDir.joinpath("2bitVarAccu.csv"),
+    #     "edpResultPath": resultDir.joinpath("2bitVaredp.csv"),
+    #     "hasVar": True,
+    #     "bit": 2,
+    #     "varStdDev": 0.75,
+    # },
+    "3bit": {
         "accuResultPath": resultDir.joinpath("3bitIdealAccu.csv"),
         "edpResultPath": resultDir.joinpath("3bitIdealedp.csv"),
         "hasVar": False,
         "bit": 3,
-        "varStdDev": 1.5,
+        "varStdDev": 0,
     },
-    "3bit_var": {
-        "accuResultPath": resultDir.joinpath("3bitVarAccu.csv"),
-        "edpResultPath": resultDir.joinpath("3bitVaredp.csv"),
-        "hasVar": True,
-        "bit": 3,
-        "varStdDev": 1.5,
-    },
+    # "3bit_var": {
+    #     "accuResultPath": resultDir.joinpath("3bitVarAccu.csv"),
+    #     "edpResultPath": resultDir.joinpath("3bitVaredp.csv"),
+    #     "hasVar": True,
+    #     "bit": 3,
+    #     "varStdDev": 1.5,
+    # },
 }
 
 
@@ -92,7 +98,66 @@ def getAccuEDP(logPath: Path) -> Tuple[float, float]:
     return accuracy, edp
 
 
-def plot(jobList: dict):
+def matplotlib_plot(jobList: dict):
+    dim2colorDict = {32: "r", 64: "b", 128: "g", 256: "m", 512: "c"}
+    col2markerDict = {32: "p", 64: "*", 128: "o", 256: "+"}
+    for jobName in jobList.keys():
+        accuracyResult = jobList[jobName]["accuResult"]
+        edpResult = jobList[jobName]["edpResult"]
+        accuracies = []
+        EDPs = []
+        labels = []
+        for dim in dimList:
+            for arrayCol in arrayColList:
+                if dim < arrayCol:
+                    continue
+                accuracies.append(accuracyResult.at[dim, arrayCol])
+                EDPs.append(edpResult.at[dim, arrayCol] * 1e9)
+                labels.append(f"dim={dim},col={arrayCol}")
+                plt.scatter(
+                    edpResult.at[dim, arrayCol] * 1e9,
+                    accuracyResult.at[dim, arrayCol],
+                    s=80,
+                    c=dim2colorDict[dim],
+                    marker=col2markerDict[arrayCol],
+                )
+                # plt.text(
+                #     edpResult.at[dim, arrayCol],
+                #     accuracyResult.at[dim, arrayCol],
+                #     f"dim={dim},col={arrayCol}",
+                #     ha="center",
+                #     va="bottom",
+                # )
+
+    # Add labels and title
+    plt.xlabel("EDP (aJ·s)")
+    plt.ylabel("Accuracy")
+
+    legendHandles = []
+    legendLabels = []
+    for dim in dim2colorDict:
+        legendHandles.append(
+            Line2D([0], [0], color=dim2colorDict[dim], lw=5)
+        )
+        legendLabels.append(f"dim={dim}")
+    for col in col2markerDict:
+        legendHandles.append(
+            Line2D(
+                [0],
+                [0],
+                color="k",
+                marker=col2markerDict[col],
+                lw=0,
+            )
+        )
+        legendLabels.append(f"col={col}")
+    plt.legend(handles=legendHandles, labels=legendLabels)
+
+    plt.savefig(matplotlibOutputPath, dpi=300)
+    print("Saved plot")
+
+
+def plotly_plot(jobList: dict):
     traces = []
     for jobName in jobList.keys():
         accuracyResult = jobList[jobName]["accuResult"]
@@ -129,7 +194,7 @@ def plot(jobList: dict):
         yaxis=dict(title="Accu"),
     )
 
-    fig.write_html(plotOutputPath)
+    fig.write_html(plotlyOutputPath)
     print("save plot")
 
 
@@ -163,7 +228,9 @@ def run_exp(
 
             assert pyScriptPath.exists(), "The script to be run does not exist!"
             assert (
-                os.system(f"python {pyScriptPath} --dim {dim} | tee {simOutputPath}")
+                os.system(
+                    f"python {pyScriptPath} --dim {dim} --n_step {n_step} | tee {simOutputPath}"
+                )
                 == 0
             ), "run script failed."
 
@@ -202,7 +269,8 @@ def main():
         jobList[jobName]["edpResult"].to_csv(jobList[jobName]["edpResultPath"])
         print("saved stat")
 
-    plot(jobList)
+    # plotly_plot(jobList)
+    matplotlib_plot(jobList)
 
 
 def plot_jobs():
@@ -220,7 +288,9 @@ def plot_jobs():
             int(i) for i in jobList[jobName]["edpResult"].columns
         ]
 
-    plot(jobList)
+    # plotly_plot(jobList)
+    matplotlib_plot(jobList)
+
 
 
 if __name__ == "__main__":
