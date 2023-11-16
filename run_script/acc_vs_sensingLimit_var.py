@@ -22,6 +22,7 @@ resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotOutputPath = scriptFolder.joinpath("./plot.html")
+emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 varList = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 sensingLimitList = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
@@ -31,14 +32,14 @@ sensingLimitList = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
 
 jobList = {
     "128dim128col": {
-        "accuResultPath": resultDir.joinpath("128dim128colAccu.csv"),
-        "edpResultPath": resultDir.joinpath("128dim128coledp.csv"),
+        "accuResultPath": resultDir.joinpath("128dim128colAccu_acc_vs_sensingLimit_var.csv"),
+        "edpResultPath": resultDir.joinpath("128dim128coledp_acc_vs_sensingLimit_var.csv"),
         "dim": 128,
         "col": 128,
     },
     # "128dim32col": {
-    #     "accuResultPath": resultDir.joinpath("128dim32colAccu.csv"),
-    #     "edpResultPath": resultDir.joinpath("128dim32coledp.csv"),
+    #     "accuResultPath": resultDir.joinpath("128dim32colAccu_acc_vs_sensingLimit_var.csv"),
+    #     "edpResultPath": resultDir.joinpath("128dim32coledp_acc_vs_sensingLimit_var.csv"),
     #     "dim": 128,
     #     "col": 32,
     # },
@@ -165,7 +166,10 @@ def main():
         print("saved stat")
 
     plot(jobList)
+    os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit_var"')
+
 
 
 if __name__ == "__main__":
     main()
+

@@ -234,7 +234,8 @@ def inference_software(
                 )
         return accumulated_acc / n_step
     else:
-        for i in tqdm(range(n_step), disable=True):
+        # for i in tqdm(range(n_step), disable=True):
+        for i in tqdm(range(n_step)):
             (
                 support_label,
                 support_set,

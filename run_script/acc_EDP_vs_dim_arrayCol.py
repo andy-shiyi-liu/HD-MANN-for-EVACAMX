@@ -25,6 +25,7 @@ if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotlyOutputPath = scriptFolder.joinpath("./plot.html")
 matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
+emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 # dimList = [32, 64, 128, 256, 512]
 dimList = [64, 128, 256, 512]
@@ -34,33 +35,35 @@ arrayColList = [32, 64, 128, 256]
 # arrayColList = [32, 64]
 
 # n_step = 10
-n_step = 100
+n_step = 1000
 
 jobList = {
-    "2bit": {
-        "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
-        "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
-        "hasVar": False,
-        "bit": 2,
-        "varStdDev": 0,
-    },
+    # "2bit": {
+    #     "accuResultPath": resultDir.joinpath("2bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "edpResultPath": resultDir.joinpath("2bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "hasVar": False,
+    #     "bit": 2,
+    #     "varStdDev": 0,
+    # },
     # "2bit_var": {
-    #     "accuResultPath": resultDir.joinpath("2bitVarAccu.csv"),
-    #     "edpResultPath": resultDir.joinpath("2bitVaredp.csv"),
+    #     "accuResultPath": resultDir.joinpath("2bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "edpResultPath": resultDir.joinpath("2bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
     #     "hasVar": True,
     #     "bit": 2,
     #     "varStdDev": 0.75,
     # },
-    # "3bit": {
-    #     "accuResultPath": resultDir.joinpath("3bitIdealAccu.csv"),
-    #     "edpResultPath": resultDir.joinpath("3bitIdealedp.csv"),
-    #     "hasVar": False,
-    #     "bit": 3,
-    #     "varStdDev": 0,
-    # },
+    "3bit": {
+        "accuResultPath": resultDir.joinpath(
+            "3bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"
+        ),
+        "edpResultPath": resultDir.joinpath("3bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+        "hasVar": False,
+        "bit": 3,
+        "varStdDev": 0,
+    },
     # "3bit_var": {
-    #     "accuResultPath": resultDir.joinpath("3bitVarAccu.csv"),
-    #     "edpResultPath": resultDir.joinpath("3bitVaredp.csv"),
+    #     "accuResultPath": resultDir.joinpath("3bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "edpResultPath": resultDir.joinpath("3bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
     #     "hasVar": True,
     #     "bit": 3,
     #     "varStdDev": 1.5,
@@ -138,9 +141,7 @@ def matplotlib_plot(jobList: dict):
     legendHandles = []
     legendLabels = []
     for dim in dim2colorDict:
-        legendHandles.append(
-            Line2D([0], [0], color=dim2colorDict[dim], lw=5)
-        )
+        legendHandles.append(Line2D([0], [0], color=dim2colorDict[dim], lw=5))
         legendLabels.append(f"dim={dim}")
     for col in col2markerDict:
         legendHandles.append(
@@ -273,6 +274,8 @@ def main():
 
     # plotly_plot(jobList)
     matplotlib_plot(jobList)
+    os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit_var"')
+
 
 
 def plot_jobs():
@@ -294,7 +297,7 @@ def plot_jobs():
     matplotlib_plot(jobList)
 
 
-
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()
+

@@ -22,38 +22,39 @@ resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotOutputPath = scriptFolder.joinpath("./plot.html")
+emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 senLimitList = list(np.arange(0, 5.1, 0.3))
 
 
 jobList = {
     "Dim=128, Col=128": {
-        "accuResultPath": resultDir.joinpath("dim128Col128Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim128Col128edp.csv"),
+        "accuResultPath": resultDir.joinpath("dim128Col128Accu_acc_vs_sensingLimit.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col128edp_acc_vs_sensingLimit.csv"),
         "dim": 128,
         "col": 128,
     },
     "Dim=128, Col=64": {
-        "accuResultPath": resultDir.joinpath("dim128Col64Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim128Col64edp.csv"),
+        "accuResultPath": resultDir.joinpath("dim128Col64Accu_acc_vs_sensingLimit.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col64edp_acc_vs_sensingLimit.csv"),
         "dim": 128,
         "col": 64,
     },
     "Dim=128, Col=32": {
-        "accuResultPath": resultDir.joinpath("dim128Col32Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim128Col32edp.csv"),
+        "accuResultPath": resultDir.joinpath("dim128Col32Accu_acc_vs_sensingLimit.csv"),
+        "edpResultPath": resultDir.joinpath("dim128Col32edp_acc_vs_sensingLimit.csv"),
         "dim": 128,
         "col": 32,
     },
     "Dim=64, Col=64": {
-        "accuResultPath": resultDir.joinpath("dim64Col64Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim64Col64edp.csv"),
+        "accuResultPath": resultDir.joinpath("dim64Col64Accu_acc_vs_sensingLimit.csv"),
+        "edpResultPath": resultDir.joinpath("dim64Col64edp_acc_vs_sensingLimit.csv"),
         "dim": 64,
         "col": 64,
     },
     "Dim=32, Col=32": {
-        "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
+        "accuResultPath": resultDir.joinpath("dim32Col32Accu_acc_vs_sensingLimit.csv"),
+        "edpResultPath": resultDir.joinpath("dim32Col32edp_acc_vs_sensingLimit.csv"),
         "dim": 32,
         "col": 32,
     },
@@ -184,6 +185,8 @@ def main():
         print("saved stat")
 
     plot(jobList)
+    os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit"')
+
 
 
 def plot_jobs():
