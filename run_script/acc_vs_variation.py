@@ -52,12 +52,12 @@ jobList = {
         "dim": 64,
         "col": 64,
     },
-    "Dim=32, Col=32": {
-        "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
-        "dim": 32,
-        "col": 32,
-    },
+    # "Dim=32, Col=32": {
+    #     "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
+    #     "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
+    #     "dim": 32,
+    #     "col": 32,
+    # },
 }
 
 
