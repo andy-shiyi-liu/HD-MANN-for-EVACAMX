@@ -21,7 +21,8 @@ pyScriptPath = scriptFolder.parent.joinpath("./main.py")
 resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
-plotOutputPath = scriptFolder.joinpath("./plot.html")
+plotlyOutputPath = scriptFolder.joinpath("./plot.html")
+matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
 emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 senLimitList = list(np.arange(0, 5.1, 0.3))
@@ -53,8 +54,8 @@ jobList = {
         "col": 64,
     },
     "Dim=32, Col=32": {
-        "accuResultPath": resultDir.joinpath("dim32Col32Accu_acc_vs_sensingLimit.csv"),
-        "edpResultPath": resultDir.joinpath("dim32Col32edp_acc_vs_sensingLimit.csv"),
+        "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
+        "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
         "dim": 32,
         "col": 32,
     },
@@ -91,8 +92,32 @@ def getAccuEDP(logPath: Path) -> Tuple[float, float]:
     assert accuracy != None and edp != None, "accuracy or edp not extracted!"
     return accuracy, edp
 
+def matplotlib_plot(jobList: dict):
+    import matplotlib.pyplot as plt
+    traces = []
+    for jobName in jobList.keys():
+        accuracyResult = jobList[jobName]["accuResult"]
+        edpResult = jobList[jobName]["edpResult"]
+        accuracies = []
+        x = []
+        for sensingLimit in senLimitList:
+            if sensingLimit > 2.5:
+                break
+            x.append(sensingLimit)
+            accuracies.append(accuracyResult.at[0, sensingLimit])
 
-def plot(jobList: dict):
+        plt.plot(x, accuracies, marker='o', linestyle='-', label=jobName)
+
+    # Adding labels and title
+    plt.xlabel('Sensing Limit')
+    plt.ylabel('Accuracy')
+
+    plt.legend()
+
+    # Show the plot
+    plt.savefig(matplotlibOutputPath, dpi=300)
+
+def plotly_plot(jobList: dict):
     traces = []
     for jobName in jobList.keys():
         accuracyResult = jobList[jobName]["accuResult"]
@@ -120,7 +145,7 @@ def plot(jobList: dict):
         yaxis=dict(title="Accuracy"),
     )
 
-    fig.write_html(plotOutputPath)
+    fig.write_html(plotlyOutputPath)
     print("save plot")
     fig.show()
 
@@ -184,7 +209,7 @@ def main():
         jobList[jobName]["edpResult"].to_csv(jobList[jobName]["edpResultPath"])
         print("saved stat")
 
-    plot(jobList)
+    plotly_plot(jobList)
     os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit"')
 
 
@@ -195,18 +220,19 @@ def plot_jobs():
             jobList[jobName]["accuResultPath"], index_col=0
         )
         jobList[jobName]["accuResult"].columns = [
-            int(i) for i in jobList[jobName]["accuResult"].columns
+            float(i) for i in jobList[jobName]["accuResult"].columns
         ]
         jobList[jobName]["edpResult"] = pd.read_csv(
             jobList[jobName]["edpResultPath"], index_col=0
         )
         jobList[jobName]["edpResult"].columns = [
-            int(i) for i in jobList[jobName]["edpResult"].columns
+            float(i) for i in jobList[jobName]["edpResult"].columns
         ]
 
-    plot(jobList)
+    # plotly_plot(jobList)
+    matplotlib_plot(jobList)
 
 
 if __name__ == "__main__":
-    main()
-    # plot_jobs()
+    # main()
+    plot_jobs()
