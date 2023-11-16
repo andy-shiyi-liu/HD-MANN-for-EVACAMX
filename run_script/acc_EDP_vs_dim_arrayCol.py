@@ -26,7 +26,8 @@ if not resultDir.exists():
 plotlyOutputPath = scriptFolder.joinpath("./plot.html")
 matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
 
-dimList = [32, 64, 128, 256, 512]
+# dimList = [32, 64, 128, 256, 512]
+dimList = [64, 128, 256, 512]
 arrayColList = [32, 64, 128, 256]
 
 # dimList = [32, 64]
@@ -36,13 +37,13 @@ arrayColList = [32, 64, 128, 256]
 n_step = 100
 
 jobList = {
-    # "2bit": {
-    #     "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
-    #     "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
-    #     "hasVar": False,
-    #     "bit": 2,
-    #     "varStdDev": 0,
-    # },
+    "2bit": {
+        "accuResultPath": resultDir.joinpath("2bitIdealAccu.csv"),
+        "edpResultPath": resultDir.joinpath("2bitIdealedp.csv"),
+        "hasVar": False,
+        "bit": 2,
+        "varStdDev": 0,
+    },
     # "2bit_var": {
     #     "accuResultPath": resultDir.joinpath("2bitVarAccu.csv"),
     #     "edpResultPath": resultDir.joinpath("2bitVaredp.csv"),
@@ -50,13 +51,13 @@ jobList = {
     #     "bit": 2,
     #     "varStdDev": 0.75,
     # },
-    "3bit": {
-        "accuResultPath": resultDir.joinpath("3bitIdealAccu.csv"),
-        "edpResultPath": resultDir.joinpath("3bitIdealedp.csv"),
-        "hasVar": False,
-        "bit": 3,
-        "varStdDev": 0,
-    },
+    # "3bit": {
+    #     "accuResultPath": resultDir.joinpath("3bitIdealAccu.csv"),
+    #     "edpResultPath": resultDir.joinpath("3bitIdealedp.csv"),
+    #     "hasVar": False,
+    #     "bit": 3,
+    #     "varStdDev": 0,
+    # },
     # "3bit_var": {
     #     "accuResultPath": resultDir.joinpath("3bitVarAccu.csv"),
     #     "edpResultPath": resultDir.joinpath("3bitVaredp.csv"),
@@ -99,7 +100,8 @@ def getAccuEDP(logPath: Path) -> Tuple[float, float]:
 
 
 def matplotlib_plot(jobList: dict):
-    dim2colorDict = {32: "r", 64: "b", 128: "g", 256: "m", 512: "c"}
+    dim2colorDict = {64: "b", 128: "g", 256: "m", 512: "c"}
+    # dim2colorDict = {32: "r", 64: "b", 128: "g", 256: "m", 512: "c"}
     col2markerDict = {32: "p", 64: "*", 128: "o", 256: "+"}
     for jobName in jobList.keys():
         accuracyResult = jobList[jobName]["accuResult"]
