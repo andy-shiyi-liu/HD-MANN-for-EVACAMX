@@ -2,11 +2,11 @@ arch:
   ArraysPerMat: 4
   MatsPerBank: 4
   Merge: exact
-  SubarraysPerArray: 2
+  SubarraysPerArray: 1
 array:
   bit: 3
   cell: Numerical
-  col: 256
+  col: 64
   row: 32
   sensing: best
   sensingLimit: 0
@@ -20,13 +20,13 @@ cell:
   writeNoise:
     cellDesign: 6T2M
     device: Numerical
-    hasWriteNoise: false
+    hasWriteNoise: true
     maxConductance: 150
     minConductance: 0
     noiseType:
     - variation
     variation:
-      stdDev: 0
+      stdDev: 1.5
       type: gaussian
 query:
   FuncSim: 1

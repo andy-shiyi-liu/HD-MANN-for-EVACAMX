@@ -26,6 +26,8 @@ matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
 emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 senLimitList = list(np.arange(0, 5.1, 0.3))
+n_step = 1000
+sendEmail = True
 
 
 jobList = {
@@ -53,12 +55,12 @@ jobList = {
         "dim": 64,
         "col": 64,
     },
-    "Dim=32, Col=32": {
-        "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
-        "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
-        "dim": 32,
-        "col": 32,
-    },
+    # "Dim=32, Col=32": {
+    #     "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
+    #     "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
+    #     "dim": 32,
+    #     "col": 32,
+    # },
 }
 
 
@@ -173,7 +175,7 @@ def run_exp(
 
         assert pyScriptPath.exists(), "The script to be run does not exist!"
         assert (
-            os.system(f"python {pyScriptPath} --dim {dim} --n_step 100 | tee {simOutputPath}")
+            os.system(f"python {pyScriptPath} --dim {dim} --n_step {n_step} --skip_software_inference | tee {simOutputPath}")
             == 0
         ), "run script failed."
 
@@ -209,8 +211,10 @@ def main():
         jobList[jobName]["edpResult"].to_csv(jobList[jobName]["edpResultPath"])
         print("saved stat")
 
-    plotly_plot(jobList)
-    os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit"')
+    # plotly_plot(jobList)
+    matplotlib_plot(jobList)
+    if sendEmail:
+        os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_sensingLimit"')
 
 
 
@@ -234,5 +238,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()

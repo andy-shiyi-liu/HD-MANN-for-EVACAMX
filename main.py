@@ -34,18 +34,24 @@ from EvaCAMX.EvaCAMX import EvaCAMX
 train_model = False
 dim = 256
 n_step = 10
+skip_software_inference = False
 
 parser = argparse.ArgumentParser()
 
 # Add arguments
 parser.add_argument("--dim", type=int, help="Embedding Dimension")
 parser.add_argument("--n_step", type=int, help="Running Times for Inference")
+parser.add_argument(
+    "--skip_software_inference", action="store_true", help="Skip software inference"
+)
 
 args = parser.parse_args()
 if args.dim:
     dim = args.dim
 if args.n_step:
     n_step = args.n_step
+if args.skip_software_inference:
+    skip_software_inference = True
 
 
 def load_config():
@@ -455,15 +461,16 @@ if __name__ == "__main__":
     #     )
     # )
 
-    software_acc = inference_software(
-        model,
-        data_gen,
-        device,
-        key_mem_transform=None,
-        sum_argmax=False,
-        type="test",
-    )
-    print(f"Software acc = {software_acc}")
+    if not skip_software_inference:
+        software_acc = inference_software(
+            model,
+            data_gen,
+            device,
+            key_mem_transform=None,
+            sum_argmax=False,
+            type="test",
+        )
+        print(f"Software acc = {software_acc}")
 
     CAM_acc = inference_CAM(
         model,

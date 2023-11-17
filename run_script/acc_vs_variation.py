@@ -27,6 +27,8 @@ emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 variationList = list(np.arange(0, 1.6, 0.1))
 
+n_step = 1000
+sendEmail = True
 
 jobList = {
     "Dim=128, Col=128": {
@@ -149,7 +151,7 @@ def run_exp(
 
         assert pyScriptPath.exists(), "The script to be run does not exist!"
         assert (
-            os.system(f"python {pyScriptPath} --dim {dim} --n_step 100 | tee {simOutputPath}")
+            os.system(f"python {pyScriptPath} --dim {dim} --n_step {n_step} --skip_software_inference | tee {simOutputPath}")
             == 0
         ), "run script failed."
 
@@ -186,7 +188,8 @@ def main():
         print("saved stat")
 
     matplotlib_plot(jobList)
-    os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_variation"')
+    if sendEmail:
+        os.system(f'python {emailScriptPath} -m "Finished script: acc_vs_variation"')
 
 
 
@@ -231,5 +234,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()
