@@ -14,6 +14,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import shutil
+import matplotlib
+# matplotlib.font_manager._rebuild()
+# shutil.rmtree(matplotlib.get_cachedir())
+from matplotlib import rcParams
+rcParams['font.family']='sans-serif'
+rcParams['font.sans-serif']=['Arial']
+rcParams['font.size'] = 18
+import matplotlib.pyplot as plt
 
 scriptFolder = Path(__file__).parent
 templateConfigPath = scriptFolder.joinpath("acc_EDP_vs_dim_arrayCol.yml")
@@ -24,7 +33,7 @@ resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotlyOutputPath = scriptFolder.joinpath("./plot.html")
-matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
+matplotlibOutputPath = scriptFolder.joinpath("./acc_EDP_vs_dim_arrayCol.png")
 emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 # dimList = [32, 64, 128, 256, 512]
@@ -39,13 +48,13 @@ n_step = 1000
 sendEmail = True
 
 jobList = {
-    "2bit": {
-        "accuResultPath": resultDir.joinpath("2bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"),
-        "edpResultPath": resultDir.joinpath("2bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
-        "hasVar": False,
-        "bit": 2,
-        "varStdDev": 0,
-    },
+    # "2bit": {
+    #     "accuResultPath": resultDir.joinpath("2bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "edpResultPath": resultDir.joinpath("2bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "hasVar": False,
+    #     "bit": 2,
+    #     "varStdDev": 0,
+    # },
     # "2bit_var": {
     #     "accuResultPath": resultDir.joinpath("2bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
     #     "edpResultPath": resultDir.joinpath("2bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
@@ -53,15 +62,15 @@ jobList = {
     #     "bit": 2,
     #     "varStdDev": 0.75,
     # },
-    # "3bit": {
-    #     "accuResultPath": resultDir.joinpath(
-    #         "3bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"
-    #     ),
-    #     "edpResultPath": resultDir.joinpath("3bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
-    #     "hasVar": False,
-    #     "bit": 3,
-    #     "varStdDev": 0,
-    # },
+    "3bit": {
+        "accuResultPath": resultDir.joinpath(
+            "3bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"
+        ),
+        "edpResultPath": resultDir.joinpath("3bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+        "hasVar": False,
+        "bit": 3,
+        "varStdDev": 0,
+    },
     # "3bit_var": {
     #     "accuResultPath": resultDir.joinpath("3bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
     #     "edpResultPath": resultDir.joinpath("3bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
@@ -156,6 +165,7 @@ def matplotlib_plot(jobList: dict):
         )
         legendLabels.append(f"col={col}")
     plt.legend(handles=legendHandles, labels=legendLabels)
+    plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
 
     plt.savefig(matplotlibOutputPath, dpi=300)
     print("Saved plot")
@@ -300,6 +310,6 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    main()
-    # plot_jobs()
+    # main()
+    plot_jobs()
 

@@ -1,15 +1,15 @@
 arch:
-  ArraysPerMat: 4
-  MatsPerBank: 4
-  Merge: exact
+  ArraysPerMat: 1
+  MatsPerBank: 1
+  Merge: best
   SubarraysPerArray: 4
 array:
   cell: &cellType Numerical     # RRAM, FeFET
   col: 512
   row: 32
   sensing: best
-  sensingLimit: 10
   bit: &bit 3
+  sensingLimit: 0
   useEVACAMCost: false
 cell:
   design: &cellDesign 6T2M
@@ -35,7 +35,7 @@ cell:
       type: gaussian    # gaussian, g-dependent
       stdDev: 0
 query:
-  FuncSim: 1
+  FuncSim: false
   PerfEval: true
   bit: *bit
   distance: euclidean     # range, euclidean

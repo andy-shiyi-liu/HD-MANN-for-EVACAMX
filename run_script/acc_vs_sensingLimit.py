@@ -12,6 +12,15 @@ from typing import Tuple
 import re
 import plotly.express as px
 import plotly.graph_objects as go
+import shutil
+import matplotlib
+# matplotlib.font_manager._rebuild()
+# shutil.rmtree(matplotlib.get_cachedir())
+from matplotlib import rcParams
+rcParams['font.family']='sans-serif'
+rcParams['font.sans-serif']=['Arial']
+rcParams['font.size'] = 18
+import matplotlib.pyplot as plt
 
 scriptFolder = Path(__file__).parent
 templateConfigPath = scriptFolder.joinpath("acc_vs_sensingLimit.yml")
@@ -22,7 +31,7 @@ resultDir = scriptFolder.joinpath("results")
 if not resultDir.exists():
     resultDir.mkdir(parents=True)
 plotlyOutputPath = scriptFolder.joinpath("./plot.html")
-matplotlibOutputPath = scriptFolder.joinpath("./plot.png")
+matplotlibOutputPath = scriptFolder.joinpath("./acc_vs_sensingLimit.png")
 emailScriptPath = scriptFolder.joinpath("./sendEmail.py")
 
 senLimitList = list(np.arange(0, 5.1, 0.3))
@@ -115,6 +124,7 @@ def matplotlib_plot(jobList: dict):
     plt.ylabel('Accuracy')
 
     plt.legend()
+    plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
 
     # Show the plot
     plt.savefig(matplotlibOutputPath, dpi=300)
@@ -238,5 +248,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    main()
-    # plot_jobs()
+    # main()
+    plot_jobs()

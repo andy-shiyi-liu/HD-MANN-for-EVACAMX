@@ -10,6 +10,7 @@ array:
   sensing: best
   bit: &bit 3
   sensingLimit: 0
+  useEVACAMCost: false
 cell:
   design: &cellDesign 6T2M
   representation: voltage
