@@ -19,7 +19,7 @@ import matplotlib
 from matplotlib import rcParams
 rcParams['font.family']='sans-serif'
 rcParams['font.sans-serif']=['Arial']
-rcParams['font.size'] = 18
+rcParams['font.size'] = 22
 import matplotlib.pyplot as plt
 
 scriptFolder = Path(__file__).parent
@@ -40,36 +40,30 @@ n_step = 1000
 sendEmail = True
 
 jobList = {
-    "Dim=128, Col=128": {
+    "128dim, 128col": {
         "accuResultPath": resultDir.joinpath("dim128Col128Accu_acc_vs_variation.csv"),
         "edpResultPath": resultDir.joinpath("dim128Col128edp_acc_vs_variation.csv"),
         "dim": 128,
         "col": 128,
     },
-    "Dim=128, Col=64": {
+    "128dim, 64col": {
         "accuResultPath": resultDir.joinpath("dim128Col64Accu_acc_vs_variation.csv"),
         "edpResultPath": resultDir.joinpath("dim128Col64edp_acc_vs_variation.csv"),
         "dim": 128,
         "col": 64,
     },
-    "Dim=128, Col=32": {
+    "128dim, 32col": {
         "accuResultPath": resultDir.joinpath("dim128Col32Accu_acc_vs_variation.csv"),
         "edpResultPath": resultDir.joinpath("dim128Col32edp_acc_vs_variation.csv"),
         "dim": 128,
         "col": 32,
     },
-    "Dim=64, Col=64": {
+    "64dim, 64col": {
         "accuResultPath": resultDir.joinpath("dim64Col64Accu_acc_vs_variation.csv"),
         "edpResultPath": resultDir.joinpath("dim64Col64edp_acc_vs_variation.csv"),
         "dim": 64,
         "col": 64,
     },
-    # "Dim=32, Col=32": {
-    #     "accuResultPath": resultDir.joinpath("dim32Col32Accu.csv"),
-    #     "edpResultPath": resultDir.joinpath("dim32Col32edp.csv"),
-    #     "dim": 32,
-    #     "col": 32,
-    # },
 }
 
 
@@ -218,7 +212,7 @@ def matplotlib_plot(jobList: dict):
     plt.xlabel('Standard Deviation of Variation')
     plt.ylabel('Accuracy')
 
-    plt.legend()
+    plt.legend(fontsize=19)
     plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
 
 

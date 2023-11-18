@@ -21,7 +21,7 @@ import matplotlib
 from matplotlib import rcParams
 rcParams['font.family']='sans-serif'
 rcParams['font.sans-serif']=['Arial']
-rcParams['font.size'] = 18
+rcParams['font.size'] = 22
 import matplotlib.pyplot as plt
 
 scriptFolder = Path(__file__).parent
@@ -152,7 +152,7 @@ def matplotlib_plot(jobList: dict):
     legendLabels = []
     for dim in dim2colorDict:
         legendHandles.append(Line2D([0], [0], color=dim2colorDict[dim], lw=5))
-        legendLabels.append(f"dim={dim}")
+        legendLabels.append(f"{dim}dim")
     for col in col2markerDict:
         legendHandles.append(
             Line2D(
@@ -163,9 +163,18 @@ def matplotlib_plot(jobList: dict):
                 lw=0,
             )
         )
-        legendLabels.append(f"col={col}")
-    plt.legend(handles=legendHandles, labels=legendLabels)
-    plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
+        legendLabels.append(f"{col}col")
+    plt.tight_layout(pad=0.5) 
+
+    # plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15, ncol=2)
+    # yMin, yMax = plt.ylim()
+    # yMargin = 0.085 * (yMax - yMin)
+    # plt.ylim(yMin, yMax + yMargin)
+
+    plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15)
+    # yMin, yMax = plt.ylim()
+    # yMargin = 0.085 * (yMax - yMin)
+    # plt.ylim(yMin, yMax + yMargin)
 
     plt.savefig(matplotlibOutputPath, dpi=300)
     print("Saved plot")

@@ -19,7 +19,7 @@ import matplotlib
 from matplotlib import rcParams
 rcParams['font.family']='sans-serif'
 rcParams['font.sans-serif']=['Arial']
-rcParams['font.size'] = 18
+rcParams['font.size'] = 22
 import matplotlib.pyplot as plt
 
 
@@ -54,31 +54,26 @@ energyItems = {  # 're' for regular expression
 }
 
 jobList = {
-    "Dim=128\nCol=128": {
+    "128dim\n128col": {
         "resultPath": resultDir.joinpath("dim128Col128Energy_acc_vs_variation.csv"),
         "dim": 128,
         "col": 128,
     },
-    "Dim=128\nCol=64": {
+    "128dim\n64col": {
         "resultPath": resultDir.joinpath("dim128Col64Energy_acc_vs_variation.csv"),
         "dim": 128,
         "col": 64,
     },
-    "Dim=128\nCol=32": {
+    "128dim\n32col": {
         "resultPath": resultDir.joinpath("dim128Col32Energy_acc_vs_variation.csv"),
         "dim": 128,
         "col": 32,
     },
-    "Dim=64\nCol=64": {
+    "64dim\n64col": {
         "resultPath": resultDir.joinpath("dim64Col64Energy_acc_vs_variation.csv"),
         "dim": 64,
         "col": 64,
     },
-    # "Dim=32\nCol=32": {
-    #     "resultPath": resultDir.joinpath("dim32Col32Energy_acc_vs_variation.csv"),
-    #     "dim": 32,
-    #     "col": 32,
-    # },
 }
 
 
@@ -201,7 +196,7 @@ def matplotlib_plot(jobList: dict):
                 "results"
             ].at[0, energyItem]
 
-    barWidth = 0.3
+    barWidth = 0.7
     barOffset = 0
     index = np.arange(0, 3 * len(jobList.keys()), 3)
     for item in energyItems:
@@ -216,17 +211,15 @@ def matplotlib_plot(jobList: dict):
     # Adding labels and title
     plt.ylabel("Energy (J)")
     plt.xticks(
-        index + barOffset / 2, jobList.keys()
+        index + (barOffset - barWidth) / 2, jobList.keys()
     )  # Set x-axis ticks in the middle of the grouped bars
-    plt.legend()  # Display legend
+    plt.legend(fontsize=18)  # Display legend
     plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
 
     xMin, xMax = plt.xlim()
 
-    xMargin = 0.13 * (xMax - xMin)
+    xMargin = 0.08 * (xMax - xMin)
     plt.xlim(xMin, xMax + xMargin)
-
-
 
     # Show the plot
     plt.savefig(matplotlibOutputPath, dpi=300)

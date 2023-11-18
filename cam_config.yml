@@ -1,15 +1,16 @@
 arch:
-  ArraysPerMat: 4
-  MatsPerBank: 4
-  Merge: exact
-  SubarraysPerArray: 1
+  ArraysPerMat: 1
+  MatsPerBank: 1
+  Merge: best
+  SubarraysPerArray: 4
 array:
   bit: 3
   cell: Numerical
-  col: 64
+  col: 32
   row: 32
   sensing: best
   sensingLimit: 0
+  useEVACAMCost: false
 cell:
   design: 6T2M
   device: Numerical
@@ -26,10 +27,10 @@ cell:
     noiseType:
     - variation
     variation:
-      stdDev: 1.5
+      stdDev: 0
       type: gaussian
 query:
-  FuncSim: 1
+  FuncSim: false
   PerfEval: true
   bit: 3
   distance: euclidean
