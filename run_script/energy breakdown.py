@@ -217,9 +217,12 @@ def matplotlib_plot(jobList: dict):
     plt.tight_layout(pad=0.5)  # You can adjust the 'pad' parameter
 
     xMin, xMax = plt.xlim()
-
     xMargin = 0.08 * (xMax - xMin)
     plt.xlim(xMin, xMax + xMargin)
+
+    yMin, yMax = plt.ylim()
+    yMargin = 0.08 * (yMax - yMin)
+    plt.ylim(yMin, yMax + yMargin)
 
     # Show the plot
     plt.savefig(matplotlibOutputPath, dpi=300)
@@ -237,5 +240,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()

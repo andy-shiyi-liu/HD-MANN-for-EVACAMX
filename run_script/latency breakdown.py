@@ -235,5 +235,5 @@ def plot_jobs():
 
 
 if __name__ == "__main__":
-    # main()
-    plot_jobs()
+    main()
+    # plot_jobs()

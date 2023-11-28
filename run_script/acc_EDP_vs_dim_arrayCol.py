@@ -48,13 +48,13 @@ n_step = 1000
 sendEmail = True
 
 jobList = {
-    # "2bit": {
-    #     "accuResultPath": resultDir.joinpath("2bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"),
-    #     "edpResultPath": resultDir.joinpath("2bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
-    #     "hasVar": False,
-    #     "bit": 2,
-    #     "varStdDev": 0,
-    # },
+    "2bit": {
+        "accuResultPath": resultDir.joinpath("2bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"),
+        "edpResultPath": resultDir.joinpath("2bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+        "hasVar": False,
+        "bit": 2,
+        "varStdDev": 0,
+    },
     # "2bit_var": {
     #     "accuResultPath": resultDir.joinpath("2bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
     #     "edpResultPath": resultDir.joinpath("2bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
@@ -62,15 +62,15 @@ jobList = {
     #     "bit": 2,
     #     "varStdDev": 0.75,
     # },
-    "3bit": {
-        "accuResultPath": resultDir.joinpath(
-            "3bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"
-        ),
-        "edpResultPath": resultDir.joinpath("3bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
-        "hasVar": False,
-        "bit": 3,
-        "varStdDev": 0,
-    },
+    # "3bit": {
+    #     "accuResultPath": resultDir.joinpath(
+    #         "3bitIdealAccu_acc_EDP_vs_dim_arrayCol.csv"
+    #     ),
+    #     "edpResultPath": resultDir.joinpath("3bitIdealedp_acc_EDP_vs_dim_arrayCol.csv"),
+    #     "hasVar": False,
+    #     "bit": 3,
+    #     "varStdDev": 0,
+    # },
     # "3bit_var": {
     #     "accuResultPath": resultDir.joinpath("3bitVarAccu_acc_EDP_vs_dim_arrayCol.csv"),
     #     "edpResultPath": resultDir.joinpath("3bitVaredp_acc_EDP_vs_dim_arrayCol.csv"),
@@ -132,7 +132,7 @@ def matplotlib_plot(jobList: dict):
                 plt.scatter(
                     edpResult.at[dim, arrayCol] * 1e9,
                     accuracyResult.at[dim, arrayCol],
-                    s=80,
+                    s=140,
                     c=dim2colorDict[dim],
                     marker=col2markerDict[arrayCol],
                 )
@@ -166,15 +166,12 @@ def matplotlib_plot(jobList: dict):
         legendLabels.append(f"{col}col")
     plt.tight_layout(pad=0.5) 
 
-    # plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15, ncol=2)
-    # yMin, yMax = plt.ylim()
-    # yMargin = 0.085 * (yMax - yMin)
-    # plt.ylim(yMin, yMax + yMargin)
+    plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15, ncol=2)
+    yMin, yMax = plt.ylim()
+    yMargin = 0.085 * (yMax - yMin)
+    plt.ylim(yMin, yMax + yMargin)
 
-    plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15)
-    # yMin, yMax = plt.ylim()
-    # yMargin = 0.085 * (yMax - yMin)
-    # plt.ylim(yMin, yMax + yMargin)
+    # plt.legend(handles=legendHandles, labels=legendLabels, fontsize=15)
 
     plt.savefig(matplotlibOutputPath, dpi=300)
     print("Saved plot")
