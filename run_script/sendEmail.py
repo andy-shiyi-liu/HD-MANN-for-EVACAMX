@@ -7,7 +7,7 @@ email = EmailSender(
     host='smtp-mail.outlook.com',
     port=587,
     username='andyliu.pub@outlook.com',
-    password='0902Lsy_123312'
+    password='123312@Andy#Liu@6192'
 )
 parser = argparse.ArgumentParser(description='test')
 parser.add_argument('-m',default="Completed task!", type=str, help ='Message in the email')
