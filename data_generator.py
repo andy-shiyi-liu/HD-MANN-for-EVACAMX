@@ -75,6 +75,7 @@ class DataGenerator(object):
         support_images = np.array(support_images)
 
         query_labels, query_images = unzip(random.sample(query_candidates, batch_size))
+        query_labels = list(query_labels)
         query_labels = np.vstack(query_labels)
         query_images = np.array([image_file_to_array(i, transform) for i in query_images])
 
